@@ -17,9 +17,6 @@ if(isset( $_SESSION['message']))
 
 ?>
 
-
-
-
 <html >
 <head>
     <title>Manage Users</title>
@@ -31,6 +28,10 @@ if(isset( $_SESSION['message']))
             width: 70%;
             margin: 0 auto 0 auto;
             margin: 50px auto;
+        }
+        .message{
+            text-align: center;
+            color: red;
         }
     </style>
 </head>

@@ -12,6 +12,8 @@ include "getCategory.php";
 $categories =  getCategory($conn);
 // print_r($categories);
 
+
+
 include "adminDelete.php";
 
 // taking the deletion message and storing in a variable
@@ -89,7 +91,7 @@ if (isset($_SESSION['message'])) {
 <body>
     <div class="navbar">
         <a href="admin.php">Admin</a>
-        <a href="#store">Store</a>
+        <a href="adminManageusers.php">Manage Users</a>
         <a href="addBook.php">Add Book</a>
         <a href="#logout">Logout</a>
     </div>

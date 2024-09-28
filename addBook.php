@@ -88,11 +88,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Book</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+                body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
             max-width: 500px;
             margin: 0 auto;
-            padding: 20px;
+        }
+        .navbar {
+            background-color: #333;
+            color: #fff;
+            padding: 30px;
+            text-align: left;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+        }
+        .navbar a:hover {
+            background-color: #555;
         }
         form {
             display: flex;
@@ -128,6 +148,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
+<div class="navbar">
+        <a href="admin.php">Back</a>
+    </div>
+    
+    <div class="container">
     <h2>Add Book</h2>
 
     <?php
@@ -161,5 +186,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <input type="submit" value="Add Book">
     </form>
+    </div>
 </body>
 </html>

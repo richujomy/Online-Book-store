@@ -33,7 +33,7 @@ if (isset($_SESSION['message'])) {
     <title>Admin Page</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
@@ -54,66 +54,100 @@ if (isset($_SESSION['message'])) {
         .navbar a:hover {
             background-color: #555;
         }
-        .container {
-            padding: 20px;
-            max-width: 1200px;
-            margin: auto;
-        }
-        .footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
 		h1{
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			height: 70vh;
 		}
+        h2 {
+            text-align: center;
+            font-size: 40px;
+        }
         table, th, td{
-            border: 1px solid;
+            /* border: 1px solid; */
+            border-bottom: 1px solid #DDD;
+        }   
+        th, td{
+            padding: 20px;
+            }
+        th {
+            background-color: #f2f2f2; /* Header background color */
         }
         table{
             width: 70%;
             margin: 0 auto 0 auto;
             margin: 50px auto;
+            text-align: center;
+            border-collapse: collapse;
+            background-color:	#EEEDEB;
+        }
+        .books th{
+            padding-top: 12px;
+            padding-bottom: 12px;
         }
         .message{
             text-align: center;
             color: red;
         }
+        .authors{
+            width: 30%;
+        }
+        .authors th{
+            padding-top: 15px;
+            padding-bottom: 15px;
+            font-size: 20px;
+        }
+        .delete-button {
+            background-color: red;
+            color: white; 
+            border: none;
+            font-size: 16px; 
+            border-radius: 5px; 
+        }
+        button:hover {
+            background-color: darkred; 
+        }
+        button a{
+            text-decoration: none;
+            color: inherit; 
+        }
+        .edit-button{
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+        }
         </style>
 </head>
 <body>
     <div class="navbar">
-        <a href="admin.php">Admin</a>
+        <a href="manageShop.php">Manage Shop</a>
         <a href="adminManageusers.php">Manage Users</a>
         <a href="addBook.php">Add Book</a>
         <a href="#logout">Logout</a>
     </div>
-
+        <h2>Book Details</h2>
     <?php if ($message){
             echo"<p class='message'>".$message."</p>";
         }        
        ?>
-        <table>
+        <table class="books">
     <thead>
         <tr>
-            <th>ID</th>
+            <!-- <th>ID</th> -->
             <th>Title</th>
             <th>Author</th>
             <th>Descritpion</th>
             <th>Category</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
         <?php foreach ($books as $book): ?>
             <tr>
-                <td><?=$book['id']?></td> 
+                <!-- <td><?=$book['id']?></td>  -->
                 <td>
                 <!-- image imported by giving the same name for both image and table cover -->
                     <img width="100" src="./img/<?=$book['cover']?>"> 
@@ -146,7 +180,13 @@ if (isset($_SESSION['message'])) {
                     ?>
                 </td>
                 <td>
-                    <a href="adminDelete.php?id=<?php echo  $book['id']; ?>">Delete</a>
+                    <button class="delete-button"><a href="adminDelete.php?id=<?php echo  $book['id']; ?>">Delete</a>
+                    </button>
+                    <br>
+                    <br>
+                    <button class="edit-button"><a href="adminEdit.php?id=<?php echo  $book['id']; ?>">Edit</a>
+                    </button>
+                    
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -157,27 +197,29 @@ if (isset($_SESSION['message'])) {
             </tr>
         <?php endif; ?>
     </tbody>
-</table>
-     <table>
-    <th>Authors</th>
-     <tr>
-        <td>
-            <?php if (empty($authors)): ?>
-            No author found
-            <?php else: ?>
+
+
+
+    <table class="authors">
+    <thead>
+        <tr>
+            <th>Authors</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (empty($authors)): ?>
+            <tr>
+                <td>No author found</td>
+            </tr>
+        <?php else: ?>
             <?php foreach ($authors as $author): ?>
-    <tr>
-        <td><?= htmlspecialchars($author['name']) ?></td>
-    </tr>
+                <tr>
+                    <td><?= htmlspecialchars($author['name']) ?></td>
+                </tr>
             <?php endforeach; ?>
-            <?php endif; ?>
-        </td>
+        <?php endif; ?>
+    </tbody>
+</table>
 
-
-                    </tr>
-                </table>
-    <!-- <div class="footer">
-        &copy; BookFlix. All rights reserved.
-    </div> -->
 </body>
 </html>

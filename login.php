@@ -57,6 +57,7 @@ if(isset($_POST['submit'])){
         margin-top: 10px;
         text-align: center;
         }
+        
         </style>
 </head>
 <body>

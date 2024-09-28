@@ -8,4 +8,6 @@ function getAuthor($con){
     $author = $result->fetch_all(MYSQLI_ASSOC);
     return $author;
 }
+
+    
 ?>

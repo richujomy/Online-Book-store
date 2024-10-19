@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Book</title>
     <Style>
-                body {
+        body {
             font-family: Arial, sans-serif;
             max-width: 500px;
             margin: 0 auto;

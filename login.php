@@ -7,6 +7,7 @@ include "config.php";
 if(isset($_POST['submit'])){
     $email = $_POST['email'];
     $password = $_POST['password'];
+    $username = $_POST['username'];
 
 
     // Check if the login attempt is for an admin
@@ -21,18 +22,24 @@ if(isset($_POST['submit'])){
         $num = mysqli_num_rows($result);
 
         if ($num > 0) {
-            $_SESSION['role'] = 'user'; // MODIFIED: Set session role for user
+            $row = mysqli_fetch_assoc($result);
+            $_SESSION['role'] = 'user'; // Set session role for user
+            $_SESSION['email'] = $row['email'];
             header("Location: home.php"); // Redirect to user dashboard
             exit();
         } else {
             $_SESSION['login_error'] = "Email and Password not matching";
-
+              
             // Redirect to the same page to avoid resubmission
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
         }
+        header("Location: home.php");
+        exit();
+
     }
 }
+
 
     // Check if there's an error message in the session
         if (isset($_SESSION['login_error'])) {

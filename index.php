@@ -19,7 +19,7 @@
             font-family: "Poppins";
             margin: 0;
             padding: 0;
-            background-image: url('./img/index1.jpg');
+            background-image: url('./img/index.jpg');
             background-size: cover; 
             background-position: center;
             background-repeat: no-repeat;
@@ -91,7 +91,7 @@
         }
     </style>
     <body>
-        <h2>chaptercraft .</h2>
+        <h2>Book Flix .</h2>
         <nav class="navbar">
         <ul>
                 <li><a href="signup.php">Login / Signup</a></li>

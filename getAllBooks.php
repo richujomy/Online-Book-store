@@ -2,7 +2,7 @@
 //get all books
 
 function getAllBooks($con) {
-    $sql = "SELECT `book_id`, `title`, `author_id`, `description`, `category_id`, `cover` FROM `books`";
+    $sql = "SELECT `book_id`, `title`, `author_id`, `price`, `description`, `category_id`, `cover` FROM `books`";
     $stmt = $con->prepare($sql);
     $stmt->execute();
 

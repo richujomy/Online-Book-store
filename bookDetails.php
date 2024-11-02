@@ -42,9 +42,10 @@ if ($result && $result->num_rows > 0) {
     <img src="./img/<?=$book['cover']?>" alt="<?=$book['title']?>" class="img" width="200">
     <h3>Details</h3>
     <p><strong>Author:</strong> <?=$book['author_name'] ?? 'No author found'?></p>
+    <p><strong>Price:</strong> $<?=$book['price'] ?? 'No author found'?></p>
     <p><strong>Category:</strong> <?=$book['category_name'] ?? 'No category found'?></p>
     <p><strong>Description:</strong> <?=$book['description']?></p>
-    <a href="buy.php?book_id=<?=$book['id']?>" class="btn">Buy</a>
+    <a href="payment.php?book_id=<?=$book['book_id']?>" class="btn">Buy</a>
     <a href="home.php" class="btn2">Back to List</a>
 </div>
 </body>

@@ -7,7 +7,7 @@ if (!empty($_GET['id'])) {
     $id = $_GET['id']; //store id to var id
 
     //statement to retrieve the author id associated with the book
-    $stmt = $conn->prepare("SELECT author_id FROM `books` WHERE id = ?");
+    $stmt = $conn->prepare("SELECT author_id FROM `books` WHERE book_id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -17,7 +17,7 @@ if (!empty($_GET['id'])) {
         $authorId = $book['author_id'];
 
         //  statement to delete the book
-        $stmt = $conn->prepare("DELETE FROM `books` WHERE id = ?");
+        $stmt = $conn->prepare("DELETE FROM `books` WHERE book_id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
 

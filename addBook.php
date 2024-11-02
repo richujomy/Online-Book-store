@@ -61,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Now inserting the book
-    $stmt = $conn->prepare("INSERT INTO books (title, author_id, description, category_id, cover) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sisis", $title, $authorId, $_POST['description'], $categoryId, $fileName);
+    $stmt = $conn->prepare("INSERT INTO books (title, author_id, price, description, category_id, cover) VALUES (?, ?, ?, ?, ?,?)");
+    $stmt->bind_param("siisis", $title, $authorId, $_POST['price'], $_POST['description'], $categoryId, $fileName);
 
     if ($stmt->execute()) {
         // stores a success message in the session if success
@@ -174,6 +174,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label for="author">Author Name:</label>
         <input type="text" id="author" name="author" required>
+
+        <label for="price">price:</label>
+        <textarea id="price" name="price" rows="4" required></textarea>
+
 
         <label for="description">Description:</label>
         <textarea id="description" name="description" rows="4" required></textarea>

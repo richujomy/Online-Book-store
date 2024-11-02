@@ -52,19 +52,32 @@
             font-size: 25px;
             font-weight: 600;
         }
+        .custom-navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+        }
+        .custom-navbar a:hover {
+            background-color: #555;
+        }
 
         .card {
             border: 1px solid #ccc;
             border-radius: 8px;
-            overflow: hidden;
+            /* overflow: hidden; */
             text-align: center;
         }
         .card-img-top {
-            height: 70%;
+            height: 60%;
             object-fit: fill;
         }
         .card-body {
             padding: 4px; 
+        }
+        .price{
+            margin: 0;
         }
         .card-title {
             margin-bottom: 0.1rem; 
@@ -80,20 +93,47 @@
         #btn-buy{
             border-radius: 10px;
         }
-        
+        .mail-p{
+            margin: 10px;
+        }
+        .btn-details{
+            background-color: #323643;
+            border-radius: 50px 50px 50px 50px;
+            width: 90%;
+        }
+        /* a{
+            color: inherit;
+            text-decoration: none;
+        }
+        a:hover {
+            color: white;
+            text-decoration: solid;
+        } */
         </style>
 </head>
 <body>
+
 <nav class="navbar navbar-expand-lg custom-navbar">
         <h1>BookFlix</h1>
         <div class="collapse navbar-collapse">
             <div class="ml-auto d-flex align-items-center">
                 <i class="fas fa-user-circle fa-2x"></i>
-                <h2><?php echo $email ?></h2>
+                <p class="mail-p"><?php echo $email ?></p>
+                <a href="myCart.php"><i class="fa fa-shopping-cart" style="font-size:24px"></i></a>
+                 <a class="nav-link" href="myorder.php">MyOrders</a>
                 <a href="logout.php" class="btn btn-danger btn-sm ml-2">Logout</a>
             </div>
         </div>
     </nav>
+
+        <?php if (isset($_SESSION['message'])) {
+         $message = $_SESSION['message'];
+
+         //displaying session message using js alert
+        echo "<script type='text/javascript'>alert('$message');</script>";
+        unset($_SESSION['message']);
+         }
+         ?>
 
     <div class="container d-flex justify-content-center mt-3">
     <form class="form-inline">
@@ -107,10 +147,11 @@
             <div class="row">
                 <?php foreach ($books as $index => $book): ?>
                     <div class="col-md-2 pt-3">  
-                        <div class="card" style="height: 17em;"> 
+                        <div class="card" style="height: 15em;"> 
                             <img src="./img/<?=$book['cover']?>" class="card-img-top" alt="<?=$book['title']?>">
                             <div class="card-body">
                                 <h5 class="card-title"><?=$book['title']?></h5>
+                                <p class="price">$<?=$book['price']?></p>
                                 <!-- <p class="card-author">
                                     <?php
                                         foreach ($authors as $author) {
@@ -120,8 +161,9 @@
                                         }
                                     ?>
                                 </p> -->
-                                <a href="bookDetails.php?book_id=<?=$book['book_id']?>" class="btn btn-info btn-sm">Details</a>
-                                <a href="buy.php?book_id=<?=$book['book_id']?>" id="btn-buy" class="btn btn-success btn-sm">Buy</a>
+                                <a href="addToCart.php?book_id=<?=$book['book_id']?>" id="btn-buy" class="btn btn-success btn-sm">Add to cart</a>
+                                <a href="payment.php?book_id=<?=$book['book_id']?>" id="btn-buy" class="btn btn-success btn-sm">Buy</a>
+                                <a href="bookDetails.php?book_id=<?=$book['book_id']?>" class="btn btn-info btn-sm mt-1 btn-details">Details</a>
                             </div>
                         </div>
                     </div>

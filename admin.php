@@ -123,7 +123,7 @@ if (isset($_SESSION['message'])) {
 </head>
 <body>
     <div class="navbar">
-        <a href="manageShop.php">Manage Shop</a>
+        <a href="manageOrders.php">Manage orders</a>
         <a href="adminManageusers.php">Manage Users</a>
         <a href="addBook.php">Add Book</a>
         <a href="#logout">Logout</a>
@@ -139,6 +139,7 @@ if (isset($_SESSION['message'])) {
             <!-- <th>ID</th> -->
             <th>Title</th>
             <th>Author</th>
+            <th>Price</th>
             <th>Descritpion</th>
             <th>Category</th>
             <th>Action</th>
@@ -163,7 +164,9 @@ if (isset($_SESSION['message'])) {
                             }
                         }
                     }
+
                     ?>
+                    <td><?=$book['price']?></td>
                 </td>
                 <td><?=$book['description']?></td>
                 <td> 
@@ -180,11 +183,11 @@ if (isset($_SESSION['message'])) {
                     ?>
                 </td>
                 <td>
-                    <button class="delete-button"><a href="adminDelete.php?id=<?php echo  $book['id']; ?>">Delete</a>
+                    <button class="delete-button"><a href="adminDelete.php?id=<?php echo  $book['book_id']; ?>">Delete</a>
                     </button>
                     <br>
                     <br>
-                    <button class="edit-button"><a href="adminEdit.php?id=<?php echo  $book['id']; ?>">Edit</a>
+                    <button class="edit-button"><a href="adminEdit.php?id=<?php echo  $book['book_id']; ?>">Edit</a>
                     </button>
                     
                 </td>

@@ -2,27 +2,24 @@
 session_start();
 include "config.php";
 
+
 // Check if the user is logged in
 if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit();
 }
 
-// Fetch book details
-$book_id = intval($_GET['book_id']); // Typecast to int for security
-$query = "SELECT books.*, author.name AS author_name, category.name AS category_name 
-          FROM books 
-          LEFT JOIN author ON books.author_id = author.author_id 
-          LEFT JOIN category ON books.category_id = category.category_id 
-          WHERE books.book_id = $book_id";
+include "getCart.php";
+$carts = getCart($conn);
+$totalPrice = 0; // For displaying cart total
 
-$result = $conn->query($query);
-
-if ($result && $result->num_rows > 0) {
-    $book = $result->fetch_assoc();
-} else {
-    echo "Book not found.";
+if (empty($carts)) {
+    echo "Your cart is empty.";
     exit;
+}
+
+foreach ($carts as $cart) {
+    $totalPrice += $cart['price'] * $cart['quantity'];
 }
 ?>
 
@@ -31,28 +28,61 @@ if ($result && $result->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
     <title>Payment</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link your CSS file here -->
+    <link rel="stylesheet" href="styles.css">
     <style>
-        /* Basic styling for the modal */
+        body {
+            font-family: 'Poppins';
+            background-color: #323643;
+            color: #333;
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .payment-container {
+            max-width: 600px;
+            margin: 25px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .book-details {
+            text-align: center;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
         .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1; 
+            display: none;
+            position: fixed;
+            z-index: 1;
             left: 0;
             top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
+            width: 100%;
+            height: 100%;
+            overflow: auto;
             background-color: rgba(0, 0, 0, 0.4);
             padding-top: 60px;
         }
         .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto; 
+            background-color: white;
+            margin: 5% auto;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%; 
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
         }
         .close {
             color: #aaa;
@@ -69,58 +99,57 @@ if ($result && $result->num_rows > 0) {
     </style>
 </head>
 <body>
-    <div class="payment-container">
-        <h1>Proceed to Payment</h1>
-        <div class="book-details">
-            <h1><?= htmlspecialchars($book['title']) ?></h1>
-            <img src="./img/<?= htmlspecialchars($book['cover']) ?>" alt="<?= htmlspecialchars($book['title']) ?>" class="img" width="200">
-            <p>Price: $<?= htmlspecialchars($book['price']) ?></p>
-            <button id="openModal">Proceed to Payment</button>
-        </div>
+<div class="navbar">
+    <a href="home.php">Back</a>
+</div>
+<div class="payment-container">
+    <h1>Proceed to Payment</h1>
+    <div class="book-details">
+        <h1>Total Price: $<?= number_format($totalPrice, 2) ?></h1>
+        <button id="openModal">Proceed to Payment</button>
     </div>
+</div>
 
-    <!-- Payment Modal -->
-    <div id="paymentModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Select Payment Method</h2>
-            <form id="paymentForm" action="process_payment.php" method="post">
-                <input type="hidden" name="book_id" value="<?= htmlspecialchars($book_id) ?>">
-                <input type="hidden" name="price" value="<?= htmlspecialchars($book['price']) ?>">
-                <label>Address:</label>
-                <input type="textarea" name="address" required>
-                <label>PIN</label>
-                <input type="numeric" name="pin-code" required>
-                <br>
-                <label>
-                    <input type="radio" name="payment_method" value="credit_card" required> Credit Card
-                </label><br>
-                <label>
-                    <input type="radio" name="payment_method" value="paypal"> PayPal
-                </label><br>
-                <button type="submit">Confirm Payment</button>
-            </form>
-        </div>
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Select Payment Method</h2>
+        <form id="paymentForm" action="process_payment.php" method="post">
+            <input type="hidden" name="total_price" value="<?= htmlspecialchars($totalPrice) ?>">
+            <label>Address:</label>
+            <input type="text" name="address" required>
+            <label>PIN:</label>
+            <input type="number" name="pin-code" required>
+            <label>
+                <input type="radio" name="payment_method" value="credit_card" required> Credit Card
+            </label>
+            <label>
+                <input type="radio" name="payment_method" value="paypal"> PayPal
+            </label>
+            <button type="submit">Confirm Payment</button>
+        </form>
     </div>
+</div>
 
-    <script>
-        var modal = document.getElementById("paymentModal");
-        var btn = document.getElementById("openModal");
-        var span = document.getElementsByClassName("close")[0];
+<script>
+    var modal = document.getElementById("paymentModal");
+    var btn = document.getElementById("openModal");
+    var span = document.getElementsByClassName("close")[0];
 
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
 
-        span.onclick = function() {
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
             modal.style.display = "none";
         }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
+    }
+</script>
 </body>
 </html>

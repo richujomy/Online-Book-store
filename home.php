@@ -19,6 +19,10 @@
     $categories =  getCategory($conn);
     $email = $_SESSION['email'];
     // print_r($email);
+
+    $searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
+    $books = getAllBooks($conn, $searchTerm); // Pass the search term to the function
+    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,7 +105,66 @@
             border-radius: 50px 50px 50px 50px;
             width: 90%;
         }
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            margin-top: 20px;
+            align-items: center;
+            font-size: small;
+        }
+        .filter-dropdown {
+            color: #FFFFFF;
+            padding: 3px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            border-radius: 50px 50px 50px 50px;
+            background-color: #323643;
+            text-align: center;
+            width: 200px;
+            height: 30px;
+        }
+        .clear-filters {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: 1px solid #dc3545;
+            background-color: #dc3545;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .clear-filters:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        /* Only show clear filters button when filters are active */
+        .clear-filters.hidden {
+            display: none;
+        }
+        .search-input, .search-btn{
+            border-radius: 50px 50px 50px 50px;
+        } 
+        .btn-cart{
+            height: 30px;
+            width: 120px;
+            border-radius: 50px;
+            display: block;
+            margin: 5px auto auto auto;
+            background-color: green;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            text-decoration: none;
+        }  
+        .btn-cart a{
+            text-decoration: none;
+        }
+        .btn-cart:hover {
+            background-color: green;
+        }
+        
         /* a{
+        
             color: inherit;
             text-decoration: none;
         }
@@ -134,14 +197,49 @@
         unset($_SESSION['message']);
          }
          ?>
+         <!-- search bar -->
+         <form class="form-inline d-flex justify-content-center mt-3" method="GET" action="">
+    <input class="form-control mr-2 search-input" type="search" name="search" placeholder="Search" value="<?php echo htmlspecialchars($searchTerm); ?>" aria-label="Search">
+    <button class="btn btn-outline-success search-btn" type="submit">Search</button>
+</form>
 
-    <div class="container d-flex justify-content-center mt-3">
-    <form class="form-inline">
-        <input class="form-control mr-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
-</div>
 
+            
+         <!-- catgory and author filter-->
+         <div class="container-filter pt-3">
+        <div class="filter-container">
+            <select class="filter-dropdown" onchange="if(this.value) window.location.href=this.value;">
+                <option value="">Browse by Category</option>
+                <?php foreach ($categories as $category): ?>
+                    <option value="?category_id=<?=$category['category_id']?>"
+                        <?php echo isset($_GET['category_id']) && $_GET['category_id'] == $category['category_id'] ? 'selected' : ''; ?>>
+                        <?=$category['name']?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <select class="filter-dropdown" onchange="if(this.value) window.location.href=this.value;">
+                <option value="">Browse by Author</option>
+                <?php foreach ($authors as $author): ?>
+                    <option value="?author_id=<?=$author['author_id']?>"
+                        <?php echo isset($_GET['author_id']) && $_GET['author_id'] == $author['author_id'] ? 'selected' : ''; ?>>
+                        <?=$author['name']?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <!-- Clear filters button - only shown when filters are active -->
+            <button 
+                class="clear-filters <?php echo (!isset($_GET['category_id']) && !isset($_GET['author_id'])) ? 'hidden' : ''; ?>"
+                onclick="window.location.href='<?php echo strtok($_SERVER['REQUEST_URI'], '?'); ?>'"
+            >
+                Clear Filters
+            </button>
+        </div>
+        </div>
+
+
+        <!-- <p>New Releases &#8667;</p> -->
     <section class=" p-5">
         <div class="container">
             <div class="row">
@@ -161,9 +259,9 @@
                                         }
                                     ?>
                                 </p> -->
-                                <a href="addToCart.php?book_id=<?=$book['book_id']?>" id="btn-buy" class="btn btn-success btn-sm">Add to cart</a>
-                                <a href="payment.php?book_id=<?=$book['book_id']?>" id="btn-buy" class="btn btn-success btn-sm">Buy</a>
-                                <a href="bookDetails.php?book_id=<?=$book['book_id']?>" class="btn btn-info btn-sm mt-1 btn-details">Details</a>
+                                <a href="addToCart.php?book_id=<?=$book['book_id']?>" class="btn-cart search-input">Add to cart</a>
+                                <br>
+                                <a href="bookDetails.php?book_id=<?=$book['book_id']?>" class="btn-details">Details</a>
                             </div>
                         </div>
                     </div>

@@ -40,34 +40,101 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link your CSS file here -->
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <style>
+        body {
+            font-family: 'Poppins';
+            background-color: #323643;
+            margin: 0;
+            padding: 0;
+        }
+        h1{
+            text-align: center;
+            color: #FFFFFF;
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 20px;
+            text-align: center;
+            color: #FFFFFF;
+        }
+
+        table {
+            margin: 0 auto 0 auto;
+            width: 60%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f8f8;
+            color: #555;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .navbar {
+            background-color: #28282B;
+            color: #fff;
+            padding: 30px;
+            text-align: left;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+        }
+        .navbar a:hover {
+            background-color: #555;
+        }
+
+    </style>
 </head>
 <body>
+<div class="navbar">
+        <a href="home.php">Back</a>
+    </div>
+    </nav>
+    <h1>MY ORDERS</h1>
     <div class="orders-container">
-        <h1>My Orders</h1>
         <table>
-            <tr>
-                <th>Order ID</th>
-                <th>Book Title</th>
-                <th>Order Date</th>
-                <th>Total Amount</th>
-                <th>Order Status</th>
-            </tr>
-            <?php
-            if ($result->num_rows > 0) {
-                while ($order = $result->fetch_assoc()) {
-                    echo "<tr>
-                            <td>{$order['order_id']}</td>
-                            <td>{$order['title']}</td>
-                            <td>{$order['order_date']}</td>
-                            <td>\${$order['total_amount']}</td>
-                            <td>{$order['order_status']}</td>
-                          </tr>";
+            <thead>
+                <tr>
+                    <!-- <th>Order ID</th> -->
+                    <th>Book Title</th>
+                    <th>Order Date</th>
+                    <th>Total Amount</th>
+                    <th>Order Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if ($result->num_rows > 0) {
+                    while ($order = $result->fetch_assoc()) {
+                        echo "<tr>
+                                <td>{$order['title']}</td>
+                                <td>{$order['order_date']}</td>
+                                <td>\${$order['total_amount']}</td>
+                                <td>{$order['order_status']}</td>
+                              </tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='5'>No orders found.</td></tr>";
                 }
-            } else {
-                echo "<tr><td colspan='5'>No orders found.</td></tr>";
-            }
-            ?>
+                ?>
+            </tbody>
         </table>
     </div>
 </body>

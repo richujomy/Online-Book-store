@@ -1,20 +1,29 @@
 <?php
 //get all books
 
-function getAllBooks($con) {
-    $sql = "SELECT `book_id`, `title`, `author_id`, `price`, `description`, `category_id`, `cover` FROM `books`";
-    $stmt = $con->prepare($sql);
-    $stmt->execute();
+// function getAllBooks($con) {
+//     $sql = "SELECT `book_id`, `title`, `author_id`, `price`, `description`, `category_id`, `cover` FROM `books`";
+//     $stmt = $con->prepare($sql);
+//     $stmt->execute();
 
-    $result = $stmt->get_result();
+//     $result = $stmt->get_result();
 
-    // Fetch all rows
-    $books = $result->fetch_all(MYSQLI_ASSOC); 
+//     // Fetch all rows
+//     $books = $result->fetch_all(MYSQLI_ASSOC); 
 
-    return $books;
+//     return $books;
+// }
+
+
+function getAllBooks($conn, $searchTerm = '') {
+    $sql = "SELECT * FROM books";
+    if ($searchTerm) {
+        $searchTerm = mysqli_real_escape_string($conn, $searchTerm);
+        $sql .= " WHERE title LIKE '%$searchTerm%'";
+    }
+    $result = mysqli_query($conn, $sql);
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
-
-
 
 
         # Get  book by ID function

@@ -67,7 +67,7 @@ if(isset($_POST['submit'])){
         
         </style>
 </head>
-<body>
+<body >
 <div class="container">
         <div class="form-container">
             <div class="form-header">

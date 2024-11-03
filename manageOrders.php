@@ -17,23 +17,8 @@ if (isset($_POST['update_order'])) {
         echo "Failed to update order status.";
     }
 }
-
-// Handle order deletion
-if (isset($_GET['delete_order_id'])) {
-    $order_id = intval($_GET['delete_order_id']);
-    
-    $stmt = $conn->prepare("DELETE FROM orders WHERE order_id = ?");
-    $stmt->bind_param("i", $order_id);
-    
-    if ($stmt->execute()) {
-        echo "Order deleted successfully.";
-    } else {
-        echo "Failed to delete order.";
-    }
-}
-
 // Fetch orders from the database
-$stmt = $conn->prepare("SELECT orders.order_id, orders.order_date, orders.total_amount, orders.order_status, signup.email 
+$stmt = $conn->prepare("SELECT orders.order_id, orders.order_date, orders.total_amount, orders.order_status, signup.username
                          FROM orders 
                          JOIN signup ON orders.user_id = signup.user_id");
 $stmt->execute();
@@ -44,17 +29,16 @@ $result = $stmt->get_result();
 <table border="1">
     <tr>
         <th>Order ID</th>
-        <th>User Email</th>
+        <th>Customer Name</th>
         <th>Order Date</th>
         <th>Total Amount</th>
         <th>Order Status</th>
-        <th>Actions</th>
     </tr>
 
     <?php while ($order = $result->fetch_assoc()): ?>
     <tr>
         <td><?php echo $order['order_id']; ?></td>
-        <td><?php echo $order['email']; ?></td>
+        <td><?php echo $order['username']; ?></td>
         <td><?php echo $order['order_date']; ?></td>
         <td><?php echo $order['total_amount']; ?></td>
         <td>
@@ -67,9 +51,6 @@ $result = $stmt->get_result();
                 <input type="hidden" name="order_id" value="<?php echo $order['order_id']; ?>">
                 <button type="submit" name="update_order">Update</button>
             </form>
-        </td>
-        <td>
-            <a href="?delete_order_id=<?php echo $order['order_id']; ?>" onclick="return confirm('Are you sure you want to delete this order?');">Delete</a>
         </td>
     </tr>
     <?php endwhile; ?>

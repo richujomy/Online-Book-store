@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "config.php";
+include "getCart.php";
 
 // Check if the user is logged in
 if (!isset($_SESSION['email'])) {
@@ -9,9 +10,8 @@ if (!isset($_SESSION['email'])) {
 }
 
 // Ensure required fields are set
-if (isset($_POST['book_id'], $_POST['price'], $_POST['payment_method'])) {
-    $book_id = intval($_POST['book_id']); // Typecast to int for security
-    $order_total = floatval($_POST['price']); // Ensure price is a float
+if (isset($_POST['total_price'], $_POST['payment_method'])) {
+    $order_total = floatval($_POST['total_price']); // Ensure price is a float
     $order_status = 'Pending';
     $payment_method = $_POST['payment_method'];
 
@@ -25,25 +25,46 @@ if (isset($_POST['book_id'], $_POST['price'], $_POST['payment_method'])) {
     if ($userResult->num_rows > 0) {
         $user = $userResult->fetch_assoc();
 
-        // Simulate payment processing here (this is where you would integrate real payment processing)
+        // Fetch all cart items for the logged-in user
+        $carts = getCart($conn); // Reuse the getCart function
 
-        // Insert order into the database
-     // Insert order into the database
-$stmt = $conn->prepare("INSERT INTO orders (user_id, book_id, order_date, total_amount, order_status, payment_method) VALUES (?, ?, NOW(), ?, ?, ?)");
-$stmt->bind_param("iisds", $user['user_id'], $book_id, $order_total, $order_status, $payment_method);
+        if (!empty($carts)) {
+            // Simulate payment processing
+            // Insert each item in the cart as a new order
+            foreach ($carts as $cart) {
+                $book_id = $cart['book_id']; // Make sure this key exists in your cart items
+                $order_amount = $cart['price'] * $cart['quantity'];
 
+                $stmt = $conn->prepare("INSERT INTO orders (user_id, book_id, order_date, total_amount, order_status, payment_method) VALUES (?, ?, NOW(), ?, ?, ?)");
+                $stmt->bind_param("iisds", $user['user_id'], $book_id, $order_amount, $order_status, $payment_method);
 
-        if ($stmt->execute()) {
+                if (!$stmt->execute()) {
+                    echo "Failed to create order for book ID: $book_id. Please try again.";
+                    exit();
+                }
+            }
+
+            // Clear the cart after successful order processing (optional)
+            clearCart($conn);
+
             // Redirect to confirmation page
             header("Location: orderConfirmation.php");
             exit();
         } else {
-            echo "Failed to create order. Please try again.";
+            echo "Cart is empty.";
         }
     } else {
         echo "User not found.";
     }
 } else {
     echo "Invalid request.";
+}
+
+// Function to clear the cart (optional)
+function clearCart($con) {
+    $email = $_SESSION['email'];
+    $stmt = $con->prepare("DELETE FROM cart_items WHERE user_id = (SELECT user_id FROM signup WHERE email = ?)");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
 }
 ?>

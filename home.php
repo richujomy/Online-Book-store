@@ -100,16 +100,34 @@
         .mail-p{
             margin: 10px;
         }
+        .search-bar{
+         display: flex;
+         position: absolute;
+         margin-left: 200px;
+         width: 40%;
+    
+        
+        }
+        .search-input{
+            width: calc(100% - 100px);
+            border-radius: 50px 50px 50px 50px;
+            
+        }
+        .search-btn{
+            border-radius: 50px 50px 50px 50px;
+        }
         .btn-details{
             background-color: #323643;
             border-radius: 50px 50px 50px 50px;
             width: 90%;
         }
+        .container-filter{
+            padding-left: 40em;    
+        }
         .filter-container {
             display: flex;
             justify-content: center;
             gap: 80px;
-            margin-top: 20px;
             align-items: center;
             font-size: small;
         }
@@ -122,7 +140,7 @@
             background-color: #323643;
             text-align: center;
             width: 200px;
-            height: 30px;
+            height: 40px;
         }
         .clear-filters {
             padding: 8px 16px;
@@ -141,9 +159,6 @@
         .clear-filters.hidden {
             display: none;
         }
-        .search-input, .search-btn{
-            border-radius: 50px 50px 50px 50px;
-        } 
         .btn-cart{
             height: 30px;
             width: 120px;
@@ -198,15 +213,14 @@
          }
          ?>
          <!-- search bar -->
-         <form class="form-inline d-flex justify-content-center mt-3" method="GET" action="">
+         <form class=" mt-5 search-bar" method="GET" action="homeSearchResult.php">
     <input class="form-control mr-2 search-input" type="search" name="search" placeholder="Search" value="<?php echo htmlspecialchars($searchTerm); ?>" aria-label="Search">
-    <button class="btn btn-outline-success search-btn" type="submit">Search</button>
+    <button class="btn-success search-btn" type="submit">Search</button>
 </form>
 
-
-            
+   
          <!-- catgory and author filter-->
-         <div class="container-filter pt-3">
+         <div class="container-filter mt-5 ">
         <div class="filter-container">
             <select class="filter-dropdown" onchange="if(this.value) window.location.href=this.value;">
                 <option value="">Browse by Category</option>
@@ -238,7 +252,9 @@
         </div>
         </div>
 
-
+        <div class="container mt-5">
+                <?php include 'homeCarousel.php'; ?>
+            </div>
         <!-- <p>New Releases &#8667;</p> -->
     <section class=" p-5">
         <div class="container">

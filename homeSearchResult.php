@@ -3,121 +3,34 @@ session_start();
 include "config.php";
 include "getAllBooks.php";
 
-$searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
-$books = getAllBooks($conn, $searchTerm);
 $email = $_SESSION['email'];
 
 include "getAuthor.php";
 $authors = getAuthor($conn);
 include "getCategory.php";
 $categories = getCategory($conn);
+
+$categoryId = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+$searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
+
+// Ensure categoryId is used directly for filtering
+$books = getFilteredBooks($conn, $searchTerm, $categoryId);
+
+// Get category name for display purposes
+$categoryName = '';
+if ($categoryId !== null && isset($categories[$categoryId])) {
+    $categoryName = $categories[$categoryId]['name'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="home.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
-    <style>
-         body{
-            font-family: "Poppins";
-            margin: 0;
-            padding: 0;
-            background-color: #323643;
-        }
-        
-
-        .custom-navbar {
-            background-color:#28282B; 
-            color: #FFFFFF;
-            height: 100px;
-        }
-        .custom-navbar h1{
-            color: #FFFFFF;
-            font-size: 25px;
-            font-weight: 600;
-        }
-        .custom-navbar a {
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-        }
-        .custom-navbar a:hover {
-            background-color: #555;
-        }
-
-        .card {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            /* overflow: hidden; */
-            text-align: center;
-        }
-        .card-img-top {
-            height: 60%;
-            object-fit: fill;
-        }
-        .card-body {
-            padding: 4px; 
-        }
-        .price{
-            margin: 0;
-        }
-        .card-title {
-            margin-bottom: 0.1rem; 
-        }
-        .card-author {
-            margin: 0.1rem 0; 
-        }
-        .btn {
-          
-            margin: 0.5rem 0; 
-            border-radius: 10px;
-        }
-        #btn-buy{
-            border-radius: 10px;
-        }
-        .mail-p{
-            margin: 10px;
-        }
-        .btn-cart{
-            height: 30px;
-            width: 120px;
-            border-radius: 50px;
-            display: block;
-            margin: 5px auto auto auto;
-            background-color: green;
-            color: white;
-            text-align: center;
-            line-height: 30px;
-            text-decoration: none;
-        }  
-        .btn-cart a{
-            text-decoration: none;
-        }
-        .btn-cart:hover {
-            background-color: green;
-        }
-        .btn-details{
-            background-color: #323643;
-            border-radius: 50px 50px 50px 50px;
-            width: 90%;
-        }
-        .custom-navbar a {
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-        }
-        .custom-navbar a:hover {
-            background-color: #555;
-        }
-        
-    </style>
 </head>
 <body>
 
@@ -127,28 +40,38 @@ $categories = getCategory($conn);
 
 <section class="p-5">
     <div class="container">
-        <h2>Search Results for "<?php echo htmlspecialchars($searchTerm); ?>"</h2>
+    <?php if (!empty($searchTerm) || !empty($categoryId)): ?>
+    <h2>
+        Search Results
+        <?php if (!empty($searchTerm)): ?>
+            for "<?php echo htmlspecialchars($searchTerm); ?>"
+        <?php endif; ?>
+        <?php if (!empty($categoryId)): ?>
+            in "<?php echo htmlspecialchars($categoryName); ?>" category
+        <?php endif; ?>
+    </h2>
+    <?php endif; ?>
         <div class="row">
             <?php if (empty($books)): ?>
                 <p>No results found.</p>
             <?php else: ?>
                 <?php foreach ($books as $index => $book): ?>
-                    <div class="col-md-2 pt-3">  
-                        <div class="card" style="height: 15em;"> 
-                            <img src="./img/<?php echo $book['cover']; ?>" class="card-img-top" alt="<?php echo $book['title']; ?>">
-                            <div class="card-body">
-                                <h5 class="card-title"><?php echo $book['title']; ?></h5>
-                                <p class="price">$<?php echo $book['price']; ?></p>
-                                <a href="addToCart.php?book_id=<?php echo $book['book_id']; ?>" class="btn-cart">Add to cart</a>
-                                <br>
-                                <a href="bookDetails.php?book_id=<?php echo $book['book_id']; ?>" class="btn-details">Details</a>
-                            </div>
-                        </div>
-                    </div>
-                    <?php if (($index + 1) % 5 == 0): ?>
-                        </div><div class="row">
-                    <?php endif; ?>
-                <?php endforeach; ?>
+        <div class="col-md-2 pt-3 mb-4">
+            <div class="card">
+                <a href="bookDetails.php?book_id=<?=$book['book_id']?>" class="book-image-link">
+                    <img src="./img/<?=$book['cover']?>" class="card-img-top" alt="<?=$book['title']?>">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title"><?=$book['title']?></h5>
+                    <p class="price">$<?=$book['price']?></p>
+                    <a href="addToCart.php?book_id=<?=$book['book_id']?>" class="btn-cart search-input">Add to cart</a>
+                </div>
+            </div>
+        </div>
+        <?php if (($index + 1) % 6 == 0): ?>
+            </div><div class="row">
+        <?php endif; ?>
+    <?php endforeach; ?>
             <?php endif; ?>
         </div> <!-- Close row div -->
     </div> <!-- Close container div -->

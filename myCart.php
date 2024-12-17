@@ -4,6 +4,29 @@ include "getCart.php";
 
 
 session_start();
+// Check if the 'remove_item' parameter exists in the URL
+if (isset($_GET['remove_item'])) {
+    // Sanitize the 'id' to avoid SQL injection
+    $itemId = intval($_GET['remove_item']); // Ensure it's an integer
+
+    // Delete the item from the cart-items table
+    $sql = "DELETE FROM `cart_items` WHERE `book_id` = ? AND `user_id` = ?";
+    $stmt = $conn->prepare($sql);
+
+    // Bind parameters (itemId and userId)
+    $stmt->bind_param('ii', $itemId, $_SESSION['user_id']);
+
+    // Execute the query and check if the item was deleted
+    if ($stmt->execute()) {
+        // Redirect back to the cart page to refresh the cart view
+        header("Location: myCart.php");
+        exit();
+    } else {
+        // Handle error if something goes wrong
+        echo "Error removing item from cart.".$stmt->error;
+    }
+}
+
 $carts = getCart($conn);
 $totalPrice = 0; // For display cart total
 ?>
@@ -109,6 +132,14 @@ $totalPrice = 0; // For display cart total
                 <td><?= htmlspecialchars($cart['title']) ?></td>
                 <td>$<?= number_format($cart['price'], 2) ?></td>
                 <td><?= htmlspecialchars($cart['quantity']) ?></td>
+
+                
+                <!-- <td>
+                <form method="GET" action="">
+        <input type="hidden" name="remove_item" value="<?= $cart['user_id']; ?>">
+        <button type="submit" class="delete-button">Remove</button>
+    </form>
+                </td> -->
             </tr>
             <?php 
                 // Calculate total price for the current item

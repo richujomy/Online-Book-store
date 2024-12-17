@@ -46,7 +46,7 @@ $result = $stmt->get_result();
                 <select name="order_status">
                     <option value="Pending" <?= $order['order_status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
                     <option value="Completed" <?= $order['order_status'] == 'Completed' ? 'selected' : '' ?>>Completed</option>
-                    <option value="Cancelled" <?= $order['order_status'] == 'Cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                 
                 </select>
                 <input type="hidden" name="order_id" value="<?php echo $order['order_id']; ?>">
                 <button type="submit" name="update_order">Update</button>

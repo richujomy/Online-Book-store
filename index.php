@@ -5,7 +5,7 @@
     <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
     <script>
         function phpPage(){
-            window.location.href = "signup.php";
+            window.location.href = "login.php";
         }
     </script>
 </head>
@@ -41,7 +41,7 @@
             font-weight: 600;
             letter-spacing: -0.2rem;
             color: #fff; 
-            text-shadow: 0 15px 4px rgba(215, 215, 215, 0.2);
+            /* text-shadow: 0 15px 4px rgba(215, 215, 215, 0.2); */
         }
         button{
             position: absolute;
@@ -94,8 +94,9 @@
         <h2>Book Flix .</h2>
         <nav class="navbar">
         <ul>
-                <li><a href="signup.php">Login / Signup</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="login.php">Login</a></li>
+                <li><a href="signup.php"> Signup</a></li>
+             
             </ul>
         </nav>
         <div>

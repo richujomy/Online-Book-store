@@ -126,7 +126,7 @@ if (isset($_SESSION['message'])) {
         <a href="manageOrders.php">Manage orders</a>
         <a href="adminManageusers.php">Manage Users</a>
         <a href="addBook.php">Add Book</a>
-        <a href="#logout">Logout</a>
+        <a href="logout.php">Logout</a>
     </div>
         <h2>Book Details</h2>
     <?php if ($message){
@@ -166,7 +166,7 @@ if (isset($_SESSION['message'])) {
                     }
 
                     ?>
-                    <td><?=$book['price']?></td>
+                    <td>$<?=$book['price']?></td>
                 </td>
                 <td><?=$book['description']?></td>
                 <td> 

@@ -64,6 +64,12 @@ if(isset($_POST['submit'])){
         margin-top: 10px;
         text-align: center;
         }
+        body{
+            background-image: url("./img/bglogin.jpg");
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+        }
         
         </style>
 </head>

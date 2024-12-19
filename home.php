@@ -89,7 +89,7 @@
         <div class="container mt-5">
                 <?php include 'homeCarousel.php'; ?>
             </div>
-        <!-- <p>New Releases &#8667;</p> -->
+
         <section class="p-5">
     <div class="container">
     <div class="row">
@@ -102,6 +102,17 @@
                 <div class="card-body">
                     <h5 class="card-title"><?=$book['title']?></h5>
                     <p class="price">$<?=$book['price']?></p>
+                     
+                    <!-- quantiy -->
+                    <div class="d-flex justify-content-center align-items-center ">
+                        <button class="btn btn-sm btn-outline-secondary px-1 d-flex align-items-center justify-content-center"
+                         style="height: 20px; min-height: 20px; line-height: 0;" onclick="decrementQuantity(this)">-</button>
+                        <input type="number" value="1" min="1" class="form-control form-control-sm mx-1" 
+                        style="width: 25px; height: 20px; padding: 0; text-align: center; font-size: 12px;" readonly>
+                        <button class="btn btn-sm btn-outline-secondary px-1 d-flex align-items-center justify-content-center" 
+                        style="height: 20px; min-height: 20px; line-height: 0;" onclick="incrementQuantity(this)">+</button>
+                    </div>
+
                     <a href="addToCart.php?book_id=<?=$book['book_id']?>" class="btn-cart search-input">Add to cart</a>
                 </div>
             </div>
@@ -117,5 +128,20 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+    <script>
+function incrementQuantity(button) {
+    const input = button.parentElement.querySelector('input[type="number"]');
+    input.value = parseInt(input.value) + 1;
+}
+
+function decrementQuantity(button) {
+    const input = button.parentElement.querySelector('input[type="number"]');
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+    }
+}
+</script>
 </body>
 </html>

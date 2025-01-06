@@ -38,7 +38,7 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="home2.css">
 </head>
 <body>
 
@@ -86,36 +86,41 @@
         </div>
         </div>
 
-        <div class="container mt-5">
-                <?php include 'homeCarousel.php'; ?>
-            </div>
+
 
         <section class="p-5">
     <div class="container">
     <div class="row">
     <?php foreach ($books as $index => $book): ?>
         <div class="col-md-2 pt-3 mb-4">
-            <div class="card">
-                <a href="bookDetails.php?book_id=<?=$book['book_id']?>" class="book-image-link">
-                    <img src="./img/<?=$book['cover']?>" class="card-img-top" alt="<?=$book['title']?>">
-                </a>
-                <div class="card-body">
-                    <h5 class="card-title"><?=$book['title']?></h5>
-                    <p class="price">$<?=$book['price']?></p>
-                     
-                    <!-- quantiy -->
-                    <div class="d-flex justify-content-center align-items-center ">
-                        <button class="btn btn-sm btn-outline-secondary px-1 d-flex align-items-center justify-content-center"
-                         style="height: 20px; min-height: 20px; line-height: 0;" onclick="decrementQuantity(this)">-</button>
-                        <input type="number" value="1" min="1" class="form-control form-control-sm mx-1" 
-                        style="width: 25px; height: 20px; padding: 0; text-align: center; font-size: 12px;" readonly>
-                        <button class="btn btn-sm btn-outline-secondary px-1 d-flex align-items-center justify-content-center" 
-                        style="height: 20px; min-height: 20px; line-height: 0;" onclick="incrementQuantity(this)">+</button>
-                    </div>
+        <div class="card">
+    <a href="bookDetails.php?book_id=<?=$book['book_id']?>" class="book-image-link">
+        <img src="./img/<?=$book['cover']?>" class="card-img-top" alt="<?=$book['title']?>">
+    </a>
+    <div class="card-body">
+        <h5 class="card-title"><?=$book['title']?></h5>
+        <p class="price">₹<?=$book['price']?></p>
 
-                    <a href="addToCart.php?book_id=<?=$book['book_id']?>" class="btn-cart search-input">Add to cart</a>
-                </div>
-            </div>
+        <!-- Quantity Selection -->
+        <div class="d-flex justify-content-center align-items-center">
+            <button class="btn btn-sm btn-outline-secondary px-1 d-flex align-items-center justify-content-center"
+                    style="height: 20px; min-height: 20px; line-height: 0;" 
+                    onclick="decrementQuantity(this, <?=$book['quantity']?>)">-</button>
+            <input type="number" value="1" min="1" 
+                   max="<?=$book['quantity']?>" 
+                   class="form-control form-control-sm mx-1" 
+                   style="width: 50px; height: 20px; padding: 0; text-align: center; font-size: 12px;" readonly>
+            <button class="btn btn-sm btn-outline-secondary px-1 d-flex align-items-center justify-content-center" 
+                    style="height: 20px; min-height: 20px; line-height: 0;" 
+                    onclick="incrementQuantity(this, <?=$book['quantity']?>)">+</button>
+        </div>
+
+        <!-- Add to Cart Button -->
+        <a href="#" 
+           class="btn-cart search-input" 
+           onclick="return updateCartLink(this, <?=$book['book_id']?>)">Add to cart</a>
+    </div>
+</div>
         </div>
         <?php if (($index + 1) % 6 == 0): ?>
             </div><div class="row">
@@ -131,17 +136,35 @@
 
 
     <script>
-function incrementQuantity(button) {
+// Increment Quantity
+function incrementQuantity(button, maxQuantity) {
     const input = button.parentElement.querySelector('input[type="number"]');
-    input.value = parseInt(input.value) + 1;
+    const currentValue = parseInt(input.value);
+    if (currentValue < maxQuantity) {
+        input.value = currentValue + 1;
+    } else {
+        alert('You cannot exceed the available stock of ' + maxQuantity + ' books.');
+    }
 }
 
+// Decrement Quantity
 function decrementQuantity(button) {
     const input = button.parentElement.querySelector('input[type="number"]');
     if (parseInt(input.value) > 1) {
         input.value = parseInt(input.value) - 1;
     }
 }
+
+// Update Add to Cart Link
+function updateCartLink(button, bookId) {
+    const input = button.parentElement.querySelector('input[type="number"]');
+    const quantity = input.value;
+
+    // Update the link dynamically with the selected quantity
+    button.href = `addToCart.php?book_id=${bookId}&quantity=${quantity}`;
+    return true; // Allow navigation
+}
 </script>
+
 </body>
 </html>

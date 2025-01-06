@@ -1,0 +1,200 @@
+body {
+    font-family: "Poppins";
+    margin: 0;
+    padding: 0;
+    background-color: #323643;
+}
+
+.custom-navbar {
+    background-color:#28282B; 
+    color: #FFFFFF;
+    height: 100px;
+}
+
+.custom-navbar h1 {
+    color: #FFFFFF;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.custom-navbar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 22em; /* Increased height slightly */
+    width: 100%; /* Ensure full width within column */
+}
+
+.book-image-link {
+    height: 65%;
+    cursor: pointer;
+    overflow: hidden;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+.book-image-link:hover .card-img-top {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+.card-img-top {
+    height: 100%;
+    object-fit: cover;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.card-body {
+    padding: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+    gap: 0.3rem; /* Add consistent spacing between elements */
+}
+
+.card-title {
+    font-size: 0.85rem;
+    margin: 0; /* Remove margin */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 2.2em;
+    line-height: 1.1em; /* Add line height for better text spacing */
+}
+.price {
+    margin: 0; /* Remove margin */
+    font-size: 0.9rem;
+}
+
+
+.custom-navbar a:hover {
+    background-color: #555;
+}
+
+.btn {
+    margin: 0.5rem 0; 
+    border-radius: 10px;
+}
+
+#btn-buy {
+    border-radius: 10px;
+}
+
+.mail-p {
+    margin: 10px;
+}
+
+.search-bar {
+    display: flex;
+    position: absolute;
+    margin-left: 200px;
+    width: 40%;
+}
+
+.search-input {
+    width: calc(100% - 100px);
+    border-radius: 50px 50px 50px 50px;
+}
+
+.search-btn {
+    border-radius: 50px 50px 50px 50px;
+}
+
+.btn-details {
+    background-color: #323643;
+    border-radius: 50px 50px 50px 50px;
+    width: 90%;
+    margin-bottom: 0.2rem;
+    padding: 0.2rem;
+    font-size: 0.9rem;
+}
+
+.container-filter {
+    padding-left: 40em;    
+}
+
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    align-items: center;
+    font-size: small;
+}
+
+.filter-dropdown {
+    color: #FFFFFF;
+    padding: 3px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    border-radius: 50px 50px 50px 50px;
+    background-color: #323643;
+    text-align: center;
+    width: 200px;
+    height: 40px;
+}
+
+.clear-filters {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid #dc3545;
+    background-color: #dc3545;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clear-filters:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.clear-filters.hidden {
+    display: none;
+}
+
+
+.btn-cart {
+    height: 25px;
+    width: 120px;
+    border-radius: 50px;
+    display: block;
+    margin: 0.3rem auto 0; /* Adjust margin */
+    background-color: green;
+    color: white;
+    text-align: center;
+    line-height: 25px;
+    text-decoration: none;
+}
+.btn-cart a {
+    text-decoration: none;
+}
+
+.btn-cart:hover {
+    background-color: green;
+}
+
+.pt-3 {
+    padding-top: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+/* Remove spinner from number input */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

@@ -166,7 +166,7 @@ if (isset($_SESSION['message'])) {
                     }
 
                     ?>
-                    <td>$<?=$book['price']?></td>
+                    <td>₹<?=$book['price']?></td>
                 </td>
                 <td><?=$book['description']?></td>
                 <td> 

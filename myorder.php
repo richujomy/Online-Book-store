@@ -2,13 +2,11 @@
 session_start();
 include "config.php";
 
-// Check if the user is logged in
 if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit();
 }
 
-// Fetch user ID based on the email
 $email = $_SESSION['email'];
 $stmt = $conn->prepare("SELECT user_id FROM signup WHERE email = ?");
 $stmt->bind_param("s", $email);
@@ -23,15 +21,20 @@ if ($userResult->num_rows === 0) {
 $user = $userResult->fetch_assoc();
 $user_id = $user['user_id'];
 
-// Fetch orders for the logged-in user
-$stmt = $conn->prepare("SELECT orders.order_id, orders.order_date, orders.total_amount, orders.order_status, books.title 
-                        FROM orders 
-                        JOIN books ON orders.book_id = books.book_id 
-                        WHERE orders.user_id = ?");
+$stmt = $conn->prepare("
+    SELECT o.order_id, o.order_date, o.total_amount, o.order_status,
+           GROUP_CONCAT(b.title SEPARATOR ', ') as books,
+           GROUP_CONCAT(od.quantity SEPARATOR ', ') as quantities
+    FROM orders o
+    LEFT JOIN orderdetails od ON o.order_id = od.order_id
+    LEFT JOIN books b ON od.book_id = b.book_id
+    WHERE o.user_id = ?
+    GROUP BY o.order_id
+    ORDER BY o.order_date DESC");
+    
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
-
 ?>
 
 <!DOCTYPE html>
@@ -48,38 +51,27 @@ $result = $stmt->get_result();
             margin: 0;
             padding: 0;
         }
-        h1{
+        h1 {
             text-align: center;
             color: #FFFFFF;
         }
-
-        h3 {
-            color: #333;
-            margin-top: 20px;
-            text-align: center;
-            color: #FFFFFF;
-        }
-
         table {
-            margin: 0 auto 0 auto;
-            width: 60%;
+            margin: 0 auto;
+            width: 80%;
             border-collapse: collapse;
             margin-top: 20px;
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
         th, td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-
         th {
             background-color: #f8f8f8;
             color: #555;
         }
-
         tr:hover {
             background-color: #f1f1f1;
         }
@@ -99,22 +91,23 @@ $result = $stmt->get_result();
         .navbar a:hover {
             background-color: #555;
         }
-
+        .books-cell {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
-<div class="navbar">
+    <div class="navbar">
         <a href="home.php">Back</a>
     </div>
-    </nav>
     <h1>MY ORDERS</h1>
     <div class="orders-container">
         <table>
             <thead>
                 <tr>
-                    <!-- <th>Order ID</th> -->
-                    <th>Book Title</th>
                     <th>Order Date</th>
+                    <th>Books</th>
                     <th>Total Amount</th>
                     <th>Order Status</th>
                 </tr>
@@ -124,14 +117,14 @@ $result = $stmt->get_result();
                 if ($result->num_rows > 0) {
                     while ($order = $result->fetch_assoc()) {
                         echo "<tr>
-                                <td>{$order['title']}</td>
                                 <td>{$order['order_date']}</td>
-                                <td>\${$order['total_amount']}</td>
+                                <td class='books-cell'>{$order['books']}</td>
+                                <td>₹{$order['total_amount']}</td>
                                 <td>{$order['order_status']}</td>
                               </tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No orders found.</td></tr>";
+                    echo "<tr><td colspan='4'>No orders found.</td></tr>";
                 }
                 ?>
             </tbody>

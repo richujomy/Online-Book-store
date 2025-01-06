@@ -1,34 +1,82 @@
 <?php
+// myCart.php
 include "config.php";
 include "getCart.php";
 
-
 session_start();
-// Check if the 'remove_item' parameter exists in the URL
+
+// Check if user is logged in
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$email = $_SESSION['email'];
+
+// Fetch user_id from the database
+$userIdQuery = "SELECT user_id FROM signup WHERE email = ?";
+$userIdStmt = $conn->prepare($userIdQuery);
+$userIdStmt->bind_param('s', $email);
+$userIdStmt->execute();
+$userIdResult = $userIdStmt->get_result();
+
+if ($userIdRow = $userIdResult->fetch_assoc()) {
+    $userId = $userIdRow['user_id'];
+} else {
+    // If user not found, log them out
+    session_destroy();
+    header("Location: login.php");
+    exit();
+}
+
+// Handle item removal
 if (isset($_GET['remove_item'])) {
-    // Sanitize the 'id' to avoid SQL injection
-    $itemId = intval($_GET['remove_item']); // Ensure it's an integer
+    $itemId = intval($_GET['remove_item']);
 
-    // Delete the item from the cart-items table
-    $sql = "DELETE FROM `cart_items` WHERE `book_id` = ? AND `user_id` = ?";
-    $stmt = $conn->prepare($sql);
+    // First get the quantity that was in cart for this item
+    $quantityQuery = "SELECT quantity, book_id FROM cart_items WHERE book_id = ? AND user_id = ?";
+    $quantityStmt = $conn->prepare($quantityQuery);
+    $quantityStmt->bind_param('ii', $itemId, $userId);
+    $quantityStmt->execute();
+    $quantityResult = $quantityStmt->get_result();
 
-    // Bind parameters (itemId and userId)
-    $stmt->bind_param('ii', $itemId, $_SESSION['user_id']);
+    if ($row = $quantityResult->fetch_assoc()) {
+        $quantityToRestore = $row['quantity'];
+        $bookId = $row['book_id'];
 
-    // Execute the query and check if the item was deleted
-    if ($stmt->execute()) {
-        // Redirect back to the cart page to refresh the cart view
-        header("Location: myCart.php");
-        exit();
-    } else {
-        // Handle error if something goes wrong
-        echo "Error removing item from cart.".$stmt->error;
+        // Start transaction
+        $conn->begin_transaction();
+
+        try {
+            // Delete the item from cart
+            $deleteQuery = "DELETE FROM cart_items WHERE book_id = ? AND user_id = ?";
+            $deleteStmt = $conn->prepare($deleteQuery);
+            $deleteStmt->bind_param('ii', $itemId, $userId);
+
+            // Restore the quantity back to books table
+            $restoreQuery = "UPDATE books SET quantity = quantity + ? WHERE book_id = ?";
+            $restoreStmt = $conn->prepare($restoreQuery);
+            $restoreStmt->bind_param('ii', $quantityToRestore, $bookId);
+
+            // Execute both queries
+            $deleteStmt->execute();
+            $restoreStmt->execute();
+
+            // Commit transaction
+            $conn->commit();
+
+            header("Location: myCart.php");
+            exit();
+        } catch (Exception $e) {
+            // If there's an error, rollback changes
+            $conn->rollback();
+            echo "Error removing item from cart: " . $e->getMessage();
+        }
     }
 }
 
 $carts = getCart($conn);
-$totalPrice = 0; // For display cart total
+$totalPrice = 0;
 ?>
 
 <!DOCTYPE html>
@@ -107,49 +155,56 @@ $totalPrice = 0; // For display cart total
         .btn-buy:hover {
             background-color: #0056b3;
         }
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
-<div class="navbar">
-    <a href="home.php">Back</a>
-</div>
+    <div class="navbar">
+        <a href="home.php">Back</a>
+    </div>
 
-<h1>Your Shopping Cart</h1>
+    <h1>Your Shopping Cart</h1>
 
-<?php if (empty($carts)): ?>
-    <h3 class="empty-cart">Your cart is empty.</h3>
-<?php else: ?>
-    <table>
-        <tr>
-            <th></th>
-            <th>Book Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-        </tr>
-        <?php foreach($carts as $cart): ?>
+    <?php if (empty($carts)): ?>
+        <h3 class="empty-cart">Your cart is empty.</h3>
+    <?php else: ?>
+        <table>
             <tr>
-                <td><img width="100" src="./img/<?= htmlspecialchars($cart['cover']) ?>"></td>
-                <td><?= htmlspecialchars($cart['title']) ?></td>
-                <td>$<?= number_format($cart['price'], 2) ?></td>
-                <td><?= htmlspecialchars($cart['quantity']) ?></td>
-
-                
-                <!-- <td>
-                <form method="GET" action="">
-        <input type="hidden" name="remove_item" value="<?= $cart['user_id']; ?>">
-        <button type="submit" class="delete-button">Remove</button>
-    </form>
-                </td> -->
+                <th></th>
+                <th>Book Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Action</th>
             </tr>
-            <?php 
-                // Calculate total price for the current item
-                $totalPrice += $cart['price'] * $cart['quantity'];
-            ?>
-        <?php endforeach; ?>
-    </table>
-    <h3>Total Price: $<?= number_format($totalPrice, 2) ?></h3> <!-- Display total price -->
-    <a href="payment.php" class="btn-buy">Buy Now</a> <!-- Adjusted button -->
-<?php endif; ?>
-
+            <?php foreach($carts as $cart): ?>
+                <tr>
+                    <td><img width="100" src="./img/<?= htmlspecialchars($cart['cover']) ?>"></td>
+                    <td><?= htmlspecialchars($cart['title']) ?></td>
+                    <td>₹<?= number_format($cart['price'], 2) ?></td>
+                    <td><?= htmlspecialchars($cart['quantity']) ?></td>
+                    <td>
+                        <a href="myCart.php?remove_item=<?= $cart['book_id'] ?>" 
+                           class="delete-button"
+                           onclick="return confirm('Are you sure you want to remove this item?');">
+                            Remove
+                        </a>
+                    </td>
+                </tr>
+                <?php $totalPrice += $cart['price'] * $cart['quantity']; ?>
+            <?php endforeach; ?>
+        </table>
+        <h3>Total Price: ₹<?= number_format($totalPrice, 2) ?></h3>
+        <a href="payment.php" class="btn-buy">Buy Now</a>
+    <?php endif; ?>
 </body>
 </html>
